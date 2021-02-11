@@ -18,6 +18,8 @@ dependencies {
   	testImplementation 'org.springframework:spring-test:5.3.3'
   	
   	implementation 'ch.qos.logback:logback-classic:1.2.3'
+  	
+  	implementation 'org.springframework:spring-oxm:5.3.3'
 }
 
 java {

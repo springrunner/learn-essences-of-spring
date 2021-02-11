@@ -14,9 +14,9 @@ import moviebuddy.domain.Movie;
 
 @ActiveProfiles(MovieBuddyProfile.XML_MODE)
 @SpringJUnitConfig(MovieBuddyFactory.class)
-public class JaxbMovieReaderTest {
+public class XmlMovieReaderTest {
 	
-	@Autowired JaxbMovieReader movieReader;
+	@Autowired XmlMovieReader movieReader;
 	
 	@Test
 	void NotEmpty_LoadedMovies() {
