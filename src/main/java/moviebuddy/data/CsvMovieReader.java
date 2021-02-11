@@ -1,4 +1,4 @@
-package moviebuddy.domain;
+package moviebuddy.data;
 
 import java.io.IOException;
 import java.net.URI;
@@ -15,6 +15,8 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Repository;
 
 import moviebuddy.ApplicationException;
+import moviebuddy.domain.Movie;
+import moviebuddy.domain.MovieReader;
 import moviebuddy.util.FileSystemUtils;
 
 @Repository
