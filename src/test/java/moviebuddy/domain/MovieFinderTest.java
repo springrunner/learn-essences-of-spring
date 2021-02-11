@@ -4,18 +4,20 @@ import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import moviebuddy.MovieBuddyFactory;
 
 /**
  * @author springrunner.kr@gmail.com
  */
+@SpringJUnitConfig(MovieBuddyFactory.class)
 public class MovieFinderTest {
 
-	final ApplicationContext applicationContext = new AnnotationConfigApplicationContext(MovieBuddyFactory.class);
-	final MovieFinder movieFinder = applicationContext.getBean(MovieFinder.class);
+	@Autowired MovieFinder movieFinder;
+	@Autowired ApplicationContext applicationContext;
 	
 	@Test
 	void NotEmpty_directedBy() {
