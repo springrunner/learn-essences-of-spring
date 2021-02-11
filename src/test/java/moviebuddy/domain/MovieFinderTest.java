@@ -29,4 +29,9 @@ public class MovieFinderTest {
 		Assertions.assertEquals(225, result.size());
 	}
 	
+	@Test
+	void Equals_MovieFinderBean() {
+		Assertions.assertEquals(movieFinder, applicationContext.getBean(MovieFinder.class));
+	}
+	
 }
