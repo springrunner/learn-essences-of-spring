@@ -7,7 +7,10 @@ repositories {
 }
 
 dependencies {
+	implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.1'
 	
+	testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.5.2'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.5.1'
 }
 
 java {
@@ -17,6 +20,10 @@ java {
 
 compileJava {
 	options.encoding = 'UTF-8'
+}
+
+test {
+	useJUnitPlatform()
 }
 
 application {
