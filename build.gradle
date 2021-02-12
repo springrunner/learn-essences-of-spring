@@ -26,6 +26,8 @@ dependencies {
   	implementation 'com.github.ben-manes.caffeine:caffeine:2.8.0'
   	
   	implementation 'javax.cache:cache-api:1.1.1'
+  	
+  	implementation 'org.aspectj:aspectjweaver:1.9.6'
 }
 
 java {
