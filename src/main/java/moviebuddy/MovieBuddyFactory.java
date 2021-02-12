@@ -2,22 +2,25 @@ package moviebuddy;
 
 import java.util.concurrent.TimeUnit;
 
-import org.springframework.aop.framework.ProxyFactoryBean;
+import javax.cache.annotation.CacheResult;
+
+import org.aopalliance.aop.Advice;
+import org.springframework.aop.Advisor;
+import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
+import org.springframework.aop.support.DefaultPointcutAdvisor;
+import org.springframework.aop.support.annotation.AnnotationMatchingPointcut;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
 
 import moviebuddy.cache.CachingAdvice;
-import moviebuddy.domain.MovieReader;
 
 @Configuration
 @PropertySource("/application.properties")
@@ -40,6 +43,26 @@ public class MovieBuddyFactory {
 
         return cacheManager;
     }
+	
+	@Bean
+    public Advisor cachingAdvisor(CacheManager cacheManager) {
+		// NameMatchMethodPointcut pointcut = new NameMatchMethodPointcut();
+		// pointcut.setMappedName("load*");
+		
+		AnnotationMatchingPointcut pointcut = new AnnotationMatchingPointcut(null, CacheResult.class);
+		
+        Advice advice = new CachingAdvice(cacheManager);
+
+	    // Advisor = PointCut(대상 선정 알고리즘) + Advice(부가기능)
+        return new DefaultPointcutAdvisor(pointcut, advice);
+    }
+	
+	@Bean
+	public DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator() {
+		// 자동 프락시 생성 빈 후처리기는 스프링 컨테이너에 등록된 모든 Advisor를 찾아 프락시 생성시 사용한다
+		return new DefaultAdvisorAutoProxyCreator();
+	}
+	
 
 	@Configuration
 	static class DomainModuleConfig {
@@ -48,20 +71,6 @@ public class MovieBuddyFactory {
 
 	@Configuration
 	static class DataSourceModuleConfig {
-		
-		@Bean
-	    @Primary
-	    public ProxyFactoryBean cachingMovieReaderFactory(ApplicationContext applicationContext) {
-	      MovieReader target = applicationContext.getBean(MovieReader.class);
-	      CacheManager cacheManager = applicationContext.getBean(CacheManager.class);
-
-	      ProxyFactoryBean proxyFactoryBean = new ProxyFactoryBean();
-	      proxyFactoryBean.setTarget(target);
-	      // proxyFactoryBean.setProxyTargetClass(true);
-	      proxyFactoryBean.addAdvice(new CachingAdvice(cacheManager));
-
-	      return proxyFactoryBean;
-	    }
 		
 	}
 

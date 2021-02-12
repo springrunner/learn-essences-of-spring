@@ -24,6 +24,8 @@ dependencies {
   	implementation 'javax.annotation:javax.annotation-api:1.3.2'
   	
   	implementation 'com.github.ben-manes.caffeine:caffeine:2.8.0'
+  	
+  	implementation 'javax.cache:cache-api:1.1.1'
 }
 
 java {
