@@ -1,11 +1,16 @@
 package moviebuddy;
 
+import java.util.concurrent.TimeUnit;
+
+import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
+
+import com.github.benmanes.caffeine.cache.Caffeine;
 
 @Configuration
 @PropertySource("/application.properties")
@@ -20,6 +25,14 @@ public class MovieBuddyFactory {
 
 		return marshaller;
 	}
+	
+	@Bean
+    public CaffeineCacheManager caffeineCacheManager() {
+        CaffeineCacheManager cacheManager = new CaffeineCacheManager();
+        cacheManager.setCaffeine(Caffeine.newBuilder().expireAfterWrite(3, TimeUnit.SECONDS));
+
+        return cacheManager;
+    }
 
 	@Configuration
 	static class DomainModuleConfig {
