@@ -28,6 +28,9 @@ dependencies {
   	implementation 'javax.cache:cache-api:1.1.1'
   	
   	implementation 'org.aspectj:aspectjweaver:1.9.6'
+  	
+  	implementation 'org.springframework:spring-jdbc:5.3.3'
+	runtimeOnly 'com.h2database:h2:1.4.200'
 }
 
 java {
