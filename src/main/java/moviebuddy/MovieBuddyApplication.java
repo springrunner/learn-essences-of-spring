@@ -3,6 +3,14 @@ package moviebuddy;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Function;
+import moviebuddy.util.UrlUtils;
 
 /**
  * @author springrunner.kr@gmail.com
@@ -41,6 +49,38 @@ public class MovieBuddyApplication {
                     output.println(error.getMessage() != null ? error.getMessage() : "unexpected error occurred.");
                 }
             }
+        }
+    }
+
+    /**
+     * reads metadata files to load list of movies.
+     *
+     * @return list of loaded movies
+     */
+    public List<Movie> loadMovies() {
+        try {
+            final URI resourceUri = ClassLoader.getSystemResource("movie_metadata.csv").toURI();
+            final Path data = Path.of(resourceUri);
+            final Function<String, Movie> csvToMovie = csv -> {
+                // split csv by commas: title,genres,language,country,releaseYear,director,actors,imdbLink,watchedDate
+                var values = csv.split(",");
+
+                var title = values[0];
+                var genres = Arrays.asList(values[1].split("\\|"));
+                var language = values[2].trim();
+                var country = values[3].trim();
+                var releaseYear = Integer.parseInt(values[4].trim());
+                var director = values[5].trim();
+                var actors = Arrays.asList(values[6].split("\\|"));
+                var imdbLink = UrlUtils.create(values[7]);
+                var watchedDate = values[8];
+
+                return Movie.of(title, genres, language, country, releaseYear, director, actors, imdbLink, watchedDate);
+            };
+
+            return Files.lines(data, StandardCharsets.UTF_8).skip(1).map(csvToMovie).toList();
+        } catch (Exception error) {
+            throw new IllegalStateException("failed to load movies.", error);
         }
     }
 
