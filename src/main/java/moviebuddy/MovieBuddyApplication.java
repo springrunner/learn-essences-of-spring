@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 import moviebuddy.util.UrlUtils;
 
@@ -50,6 +51,32 @@ public class MovieBuddyApplication {
                 }
             }
         }
+    }
+    
+    /**
+     * find movies directed by specified director. case-insensitive and checks if director's name contains provided characters.
+     *
+     * @param director director name (or part of name)
+     * @return list of found movies
+     */
+    public List<Movie> directedBy(String director) {
+        Objects.requireNonNull(director, "director must be not null");
+
+        return loadMovies().stream().filter(it ->
+            it.director().toLowerCase().contains(director.toLowerCase())
+        ).toList();
+    }
+
+    /**
+     * find movies released in specified year.
+     *
+     * @param releaseYear release year
+     * @return list of found movies
+     */
+    public List<Movie> releasedIn(int releaseYear) {
+        return loadMovies().stream().filter(it ->
+            it.releaseYear() == releaseYear
+        ).toList();
     }
 
     /**
