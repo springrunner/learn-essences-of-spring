@@ -14,6 +14,9 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Stream;
+import moviebuddy.ApplicationException.InvalidCommandArgumentsException;
+import moviebuddy.ApplicationException.TerminateException;
+import moviebuddy.ApplicationException.UnknownCommandException;
 import moviebuddy.util.UrlUtils;
 
 /**
@@ -49,7 +52,7 @@ public class MovieBuddyApplication {
                         case "directedBy":
                             var director = String.join(" ", arguments);
                             if (director.isBlank()) {
-                                throw new IllegalArgumentException("input error, please try again!");
+                                throw new InvalidCommandArgumentsException();
                             }
 
                             var moviesDirectedBy = directedBy(director);
@@ -65,7 +68,7 @@ public class MovieBuddyApplication {
                             try {
                                 releaseYear = Integer.parseInt(arguments.getFirst());
                             } catch (NoSuchElementException | NumberFormatException error) {
-                                throw new IllegalArgumentException("input error, please try again!", error);
+                                throw new InvalidCommandArgumentsException(error);
                             }
 
                             var moviesReleasedIn = releasedIn(releaseYear);
@@ -78,14 +81,14 @@ public class MovieBuddyApplication {
                             break;
                         case "quit":
                             output.println("quit application.");
-                            throw new InterruptedException();
+                            throw new TerminateException();
                         default:
-                            throw new IllegalArgumentException("unknown command, please try again!");
+                            throw new UnknownCommandException();
                     }
-                } catch (InterruptedException error) {
+                } catch (TerminateException error) {
                     // exit loop
                     return;
-                } catch (Exception error) {
+                } catch (ApplicationException error) {
                     // display errors that during command processing
                     output.println(error.getMessage() != null ? error.getMessage() : "unexpected error occurred.");
                 }
@@ -153,7 +156,7 @@ public class MovieBuddyApplication {
 
             return Files.lines(data, StandardCharsets.UTF_8).skip(1).map(csvToMovie).toList();
         } catch (Exception error) {
-            throw new IllegalStateException("failed to load movies.", error);
+            throw new ApplicationException("failed to load movies.", error);
         }
     }
 
