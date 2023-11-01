@@ -8,9 +8,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.stream.Stream;
 import moviebuddy.util.UrlUtils;
 
 /**
@@ -31,11 +34,48 @@ public class MovieBuddyApplication {
                     output.print("❯ ");
                     output.flush();
 
-                    // read user input
-                    final var command = input.readLine();
+                    // parse user input, e.g., "directedBy Michael Bay"
+                    final var inputs = Stream.of(input.readLine().split(" "))
+                        .map(String::trim)
+                        .filter(data -> !data.isBlank())
+                        .toList();
+
+                    // extract command and subsequent arguments 
+                    final var command = inputs.isEmpty() ? "" : inputs.get(0);
+                    final var arguments = inputs.size() > 1 ? inputs.subList(1, inputs.size()) : Collections.<String>emptyList();
 
                     // handle commands
                     switch (command) {
+                        case "directedBy":
+                            var director = String.join(" ", arguments);
+                            if (director.isBlank()) {
+                                throw new IllegalArgumentException("input error, please try again!");
+                            }
+
+                            var moviesDirectedBy = directedBy(director);
+
+                            output.println("find for movies by `%s`.".formatted(director));
+                            for (var idx = 0; idx < moviesDirectedBy.size(); idx++) {
+                                output.println(formatted(idx + 1, moviesDirectedBy.get(idx)));
+                            }
+                            output.println(String.format("%d movies found.", moviesDirectedBy.size()));
+                            break;
+                        case "releasedIn":
+                            int releaseYear;
+                            try {
+                                releaseYear = Integer.parseInt(arguments.getFirst());
+                            } catch (NoSuchElementException | NumberFormatException error) {
+                                throw new IllegalArgumentException("input error, please try again!", error);
+                            }
+
+                            var moviesReleasedIn = releasedIn(releaseYear);
+
+                            output.println("find for movies from %s year.".formatted(releaseYear));
+                            for (var idx = 0; idx < moviesReleasedIn.size(); idx++) {
+                                output.println(formatted(idx + 1, moviesReleasedIn.get(idx)));
+                            }
+                            output.println(String.format("%d movies found.", moviesReleasedIn.size()));
+                            break;
                         case "quit":
                             output.println("quit application.");
                             throw new InterruptedException();
@@ -52,7 +92,13 @@ public class MovieBuddyApplication {
             }
         }
     }
-    
+
+    private String formatted(int lineNumber, Movie movie) {
+        return "%d. title: %-50s\treleaseYear: %d\tdirector: %-25s\twatchedDate: %s".formatted(
+            lineNumber, movie.title(), movie.releaseYear(), movie.director(),
+            movie.watchedDate().format(Movie.DEFAULT_WATCHED_DATE_FORMATTER));
+    }
+
     /**
      * find movies directed by specified director. case-insensitive and checks if director's name contains provided characters.
      *
