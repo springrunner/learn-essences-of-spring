@@ -1,5 +1,5 @@
 plugins {
-    id 'java'
+    id 'application'
 }
 
 ext {
@@ -15,6 +15,10 @@ java {
     toolchain {
         languageVersion = javaVersion
     }
+}
+
+application {
+    mainClassName = 'moviebuddy.MovieBuddyApplication'
 }
 
 tasks.withType(org.gradle.api.tasks.compile.JavaCompile).configureEach {

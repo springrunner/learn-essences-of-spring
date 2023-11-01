@@ -17,6 +17,7 @@ import java.util.stream.Stream;
 import moviebuddy.ApplicationException.InvalidCommandArgumentsException;
 import moviebuddy.ApplicationException.TerminateException;
 import moviebuddy.ApplicationException.UnknownCommandException;
+import moviebuddy.util.FileSystemUtils;
 import moviebuddy.util.UrlUtils;
 
 /**
@@ -136,7 +137,7 @@ public class MovieBuddyApplication {
     public List<Movie> loadMovies() {
         try {
             final URI resourceUri = ClassLoader.getSystemResource("movie_metadata.csv").toURI();
-            final Path data = Path.of(resourceUri);
+            final Path data = Path.of(FileSystemUtils.initializeJarFileSystem(resourceUri));
             final Function<String, Movie> csvToMovie = csv -> {
                 // split csv by commas: title,genres,language,country,releaseYear,director,actors,imdbLink,watchedDate
                 var values = csv.split(",");
