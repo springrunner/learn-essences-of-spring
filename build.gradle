@@ -1,0 +1,26 @@
+plugins {
+    id 'application'
+}
+
+ext {
+    javaVersion = JavaLanguageVersion.of(21)
+    encoding = 'UTF-8'
+}
+
+repositories {
+    mavenCentral()
+}
+
+java {
+    toolchain {
+        languageVersion = javaVersion
+    }
+}
+
+application {
+    mainClassName = 'moviebuddy.MovieBuddyApplication'
+}
+
+tasks.withType(org.gradle.api.tasks.compile.JavaCompile).configureEach {
+    options.encoding = encoding
+}
